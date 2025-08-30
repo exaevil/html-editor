@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان CCNP ENCOR 350-401 - نموذج تجريبي كامل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-top: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .options label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .options label:hover {
+            background-color: #e9ecef;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        #submit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #submit-btn:hover {
+            background-color: #218838;
+        }
+
+        #reset-btn {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        #reset-btn:hover {
+            background-color: #e0a800;
+        }
+
+        #shuffle-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        #shuffle-btn:hover {
+            background-color: #138496;
+        }
+
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .correct-answer {
+            background-color: #d4edda;
+            color: #155724;
+            font-weight: bold;
+            border: 1px solid #c3e6cb;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .wrong-answer {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>امتحان CCNP ENCOR 350-401 - نموذج تجريبي</h1>
+            <div id="timer">الزمن المتبقي: <span>90:00</span></div>
+        </header>
+
+        <form id="quiz-form">
+            </form>
+
+        <div class="controls">
+            <button id="shuffle-btn">خلط الأسئلة</button>
+            <button id="reset-btn">إعادة ضبط</button>
+            <button id="submit-btn">تسليم الإجابات</button>
+        </div>
+
+        <div id="results" class="hidden">
+            <h2>النتائج</h2>
+            <div id="score"></div>
+            <h3>مراجعة الإجابات</h3>
+            <div id="review"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "ما هو البروتوكول الذي يستخدم لتوفير التوازن في التحميل (Load Balancing) بين عدة روابط إنترنت في راوتر واحد؟",
+                options: ["NAT", "DHCP", "PBR", "BGP"],
+                answer: "PBR"
+            },
+            {
+                question: "أي من البروتوكولات التالية لا يعتبر بروتوكول توجيه (Routing Protocol)؟",
+                options: ["OSPF", "EIGRP", "RIP", "Spanning Tree Protocol (STP)"],
+                answer: "Spanning Tree Protocol (STP)"
+            },
+            {
+                question: "في تقنية EtherChannel، ما هو البروتوكول الذي يستخدم للتفاوض التلقائي بين الراوترات لإنشاء القناة؟",
+                options: ["LACP", "VRRP", "HSRP", "GLBP"],
+                answer: "LACP"
+            },
+            {
+                question: "ما هو الغرض من استخدام ACLs (Access Control Lists) في الراوتر؟",
+                options: ["تحويل العناوين", "تصفية حزم البيانات", "إعادة توجيه المسارات", "توزيع عناوين IP"],
+                answer: "تصفية حزم البيانات"
+            },
+            {
+                question: "ما هي الطبقة في نموذج OSI التي يعمل عليها الراوتر؟",
+                options: ["الطبقة الأولى", "الطبقة الثانية", "الطبقة الثالثة", "الطبقة الرابعة"],
+                answer: "الطبقة الثالثة"
+            },
+            {
+                question: "أي من الآتي يعتبر بروتوكولاً خارجياً (Exterior Gateway Protocol - EGP)؟",
+                options: ["EIGRP", "BGP", "IS-IS", "OSPF"],
+                answer: "BGP"
+            },
+            {
+                question: "ما هو الغرض من بروتوكول HSRP؟",
+                options: ["توزيع الأحمال", "الوصول للمسار الافتراضي الاحتياطي", "اكتشاف الأجهزة المجاورة", "منع الحلقات الشبكية"],
+                answer: "الوصول للمسار الافتراضي الاحتياطي"
+            },
+            {
+                question: "ما هو مفهوم VRF-Lite في سياق بروتوكول BGP؟",
+                options: ["تحسين أداء التوجيه", "إنشاء جداول توجيه منفصلة", "تقليل استهلاك الذاكرة", "تأمين الاتصال بين الراوترات"],
+                answer: "إنشاء جداول توجيه منفصلة"
+            },
+            {
+                question: "ما هي وظيفة الـ **Control Plane** في شبكات SDN؟",
+                options: ["إرسال الحزم", "اتخاذ قرارات التوجيه", "مراقبة الأداء", "تحديد نوع البيانات"],
+                answer: "اتخاذ قرارات التوجيه"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدم لإدارة شبكات WiFi وتوفير الأمان للمستخدمين؟",
+                options: ["802.1Q", "802.11ac", "802.1x", "802.3ad"],
+                answer: "802.1x"
+            },
+            {
+                question: "ما هو المصطلح الذي يشير إلى الشبكة الفرعية (Subnet) التي تحتوي على عنوان الـ Broadcast؟",
+                options: ["Network ID", "Host Address", "Broadcast Address", "Default Gateway"],
+                answer: "Broadcast Address"
+            },
+            {
+                question: "ما هو الأمر الذي يستخدم لعرض جدول التوجيه (Routing Table) في راوتر سيسكو؟",
+                options: ["show ip interface brief", "show ip route", "show cdp neighbors", "show version"],
+                answer: "show ip route"
+            },
+            {
+                question: "ما هو الفرق الرئيسي بين OSPF و EIGRP؟",
+                options: ["OSPF هو بروتوكول Link-State، EIGRP هو Distance Vector", "كلاهما Link-State", "OSPF هو Distance Vector، EIGRP هو Link-State", "كلاهما Distance Vector"],
+                answer: "OSPF هو بروتوكول Link-State، EIGRP هو Distance Vector"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدم لربط شبكات VLANs المختلفة عبر راوتر؟",
+                options: ["STP", "Inter-VLAN Routing", "VTP", "PIM"],
+                answer: "Inter-VLAN Routing"
+            },
+            {
+                question: "ما هي الوظيفة الأساسية لبروتوكول DHCP؟",
+                options: ["تحويل أسماء النطاقات إلى عناوين IP", "تخصيص عناوين IP تلقائيًا للأجهزة", "توجيه حزم البيانات بين الشبكات", "توفير الأمان للشبكة"],
+                answer: "تخصيص عناوين IP تلقائيًا للأجهزة"
+            },
+            {
+                question: "ما هو الغرض من استخدام Static Routes؟",
+                options: ["التوجيه التلقائي", "تحديد مسارات ثابتة يدوياً", "توزيع عناوين IP", "منع الحلقات"],
+                answer: "تحديد مسارات ثابتة يدوياً"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدم لـ **Path Selection** في بروتوكول BGP؟",
+                options: ["IGP", "EGP", "IP", "MPLS"],
+                answer: "IGP"
+            },
+            {
+                question: "في بروتوكول OSPF، ما هو دور الـ **DR** (Designated Router)؟",
+                options: ["تجميع التحديثات في الشبكة", "تحديد مسار البيانات", "نشر معلومات الحالة للشبكة", "إدارة أجهزة الشبكة"],
+                answer: "نشر معلومات الحالة للشبكة"
+            },
+            {
+                question: "ما هو الغرض الرئيسي من بروتوكول **802.1Q**؟",
+                options: ["تحديد الأولويات للحزم", "تشفير البيانات", "إضافة Tagging لحزم VLAN", "اكتشاف الأجهزة المجاورة"],
+                answer: "إضافة Tagging لحزم VLAN"
+            },
+            {
+                question: "ما هو الأمر الذي يستخدم لحفظ الإعدادات في ذاكرة NVRAM على راوتر سيسكو؟",
+                options: ["copy running-config startup-config", "show running-config", "reload", "write memory"],
+                answer: "copy running-config startup-config"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدمه راوتر Cisco لتحديد أجهزة Cisco المجاورة؟",
+                options: ["LLDP", "CDP", "ICMP", "ARP"],
+                answer: "CDP"
+            },
+            {
+                question: "ما هي التقنية التي تستخدم لتقسيم نطاق البث (Broadcast Domain) إلى أجزاء أصغر؟",
+                options: ["VLAN", "STP", "Port-channel", "IP Subnetting"],
+                answer: "VLAN"
+            },
+            {
+                question: "أي من أنواع الـ IPv6 لا يمكن توجيهها عبر الإنترنت؟",
+                options: ["Global Unicast", "Link-local", "Multicast", "Anycast"],
+                answer: "Link-local"
+            },
+            {
+                question: "ما هو المصطلح الذي يصف عملية **Path Selection** في بروتوكول BGP؟",
+                options: ["Convergence", "Load Balancing", "BGP Best Path Selection", "Routing"],
+                answer: "BGP Best Path Selection"
+            },
+            {
+                question: "ما هو الغرض من استخدام بروتوكول **LLDP**؟",
+                options: ["تحديد الأجهزة المجاورة", "توزيع عناوين IP", "تأمين الشبكة", "توجيه حزم البيانات"],
+                answer: "تحديد الأجهزة المجاورة"
+            },
+            {
+                question: "ما هو المقياس (Metric) المستخدم في بروتوكول EIGRP لتحديد أفضل مسار؟",
+                options: ["Hop Count", "Bandwidth and Delay", "Cost", "Trust"],
+                answer: "Bandwidth and Delay"
+            },
+            {
+                question: "أي من البروتوكولات التالية يستخدم لـ **IP Multicasting**؟",
+                options: ["OSPF", "EIGRP", "PIM", "BGP"],
+                answer: "PIM"
+            },
+            {
+                question: "ما هو الغرض من استخدام **DHCP Snooping**؟",
+                options: ["تأمين شبكة DHCP", "تحسين سرعة التوزيع", "تحديد الراوتر الافتراضي", "إعادة توجيه البيانات"],
+                answer: "تأمين شبكة DHCP"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدم لضمان استمرارية الاتصال في حال فشل السويتش الأساسي؟",
+                options: ["Spanning Tree Protocol", "VLAN Trunking Protocol", "Hot Standby Router Protocol", "VLAN"],
+                answer: "Spanning Tree Protocol"
+            },
+            {
+                question: "ما هو الغرض من استخدام **Port Security** على سويتش؟",
+                options: ["توزيع عناوين IP", "منع الوصول غير المصرح به للمنافذ", "إعادة توجيه البيانات", "تحديد سرعة المنفذ"],
+                answer: "منع الوصول غير المصرح به للمنافذ"
+            },
+            {
+                question: "ما هي الوظيفة الأساسية لبروتوكول **NAT**؟",
+                options: ["تحويل أسماء النطاقات", "تأمين الشبكة", "تخصيص عناوين IP", "ترجمة العناوين"],
+                answer: "ترجمة العناوين"
+            },
+            {
+                question: "ما هو مصطلح **Unicast** في سياق الاتصال الشبكي؟",
+                options: ["الاتصال من جهاز لعدة أجهزة", "الاتصال من جهاز لجهاز واحد", "الاتصال لجميع الأجهزة", "الاتصال لمجموعة من الأجهزة"],
+                answer: "الاتصال من جهاز لجهاز واحد"
+            },
+            {
+                question: "ما هو البروتوكول الذي يعمل على الطبقة الرابعة والخامسة من نموذج TCP/IP؟",
+                options: ["HTTP", "TCP", "UDP", "IP"],
+                answer: "HTTP"
+            },
+            {
+                question: "ما هو الأمر الذي يستخدم لتعطيل منفذ على سويتش؟",
+                options: ["shutdown", "no shutdown", "reload", "exit"],
+                answer: "shutdown"
+            },
+            {
+                question: "ما هي الأداة التي تستخدم لتحليل حزم البيانات المارة بالشبكة؟",
+                options: ["Ping", "Traceroute", "Wireshark", "Telnet"],
+                answer: "Wireshark"
+            },
+            {
+                question: "ما هو الغرض من استخدام **Route Maps** في بروتوكول BGP؟",
+                options: ["تحديد المسارات", "تصفية المسارات وتعديل خصائصها", "منع الحلقات", "توزيع الأحمال"],
+                answer: "تصفية المسارات وتعديل خصائصها"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدمه راوتر Cisco لاكتشاف جيرانه على مستوى الطبقة الثانية والثالثة؟",
+                options: ["CDP", "LLDP", "OSPF", "EIGRP"],
+                answer: "CDP"
+            },
+            {
+                question: "ما هو الغرض من استخدام **Port Aggregation Protocol (PAgP)**؟",
+                options: ["تجميع المنافذ في EtherChannel", "تحديد الأولويات", "تأمين المنافذ", "توزيع عناوين IP"],
+                answer: "تجميع المنافذ في EtherChannel"
+            },
+            {
+                question: "في شبكات SDN، ما هي وظيفة الـ **Application Plane**؟",
+                options: ["توفير واجهة للمبرمجين للتفاعل مع الشبكة", "إرسال الحزم", "إدارة الأجهزة", "تحديد مسارات البيانات"],
+                answer: "توفير واجهة للمبرمجين للتفاعل مع الشبكة"
+            },
+            {
+                question: "ما هو الفرق بين **VRRP** و **HSRP**؟",
+                options: ["VRRP مفتوح المصدر وHSRP خاص بسيسكو", "HSRP مفتوح المصدر وVRRP خاص بسيسكو", "كلاهما مفتوح المصدر", "كلاهما خاص بسيسكو"],
+                answer: "VRRP مفتوح المصدر وHSRP خاص بسيسكو"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدم لترجمة أسماء النطاقات إلى عناوين IP؟",
+                options: ["DHCP", "NAT", "DNS", "ARP"],
+                answer: "DNS"
+            },
+            {
+                question: "ما هو الغرض من استخدام **IP SLA** في أجهزة سيسكو؟",
+                options: ["تحديد المسار", "قياس الأداء ومراقبة جودة الخدمة", "تأمين الشبكة", "توزيع عناوين IP"],
+                answer: "قياس الأداء ومراقبة جودة الخدمة"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدمه OSPF لإنشاء علاقة الجوار بين الراوترات؟",
+                options: ["Ping", "Hello", "ICMP", "DHCP"],
+                answer: "Hello"
+            },
+            {
+                question: "ما هي التقنية التي تستخدم لتشفير البيانات بين الشبكات الخاصة عبر شبكة عامة مثل الإنترنت؟",
+                options: ["VPN", "NAT", "VLAN", "STP"],
+                answer: "VPN"
+            },
+            {
+                question: "ما هو الغرض من بروتوكول **LLDP**؟",
+                options: ["اكتشاف الأجهزة المجاورة", "توزيع عناوين IP", "تأمين الشبكة", "توجيه حزم البيانات"],
+                answer: "اكتشاف الأجهزة المجاورة"
+            },
+            {
+                question: "ما هو المصطلح الذي يصف عملية **Route Redistribution**؟",
+                options: ["توجيه الحزم", "تشفير البيانات", "تبادل معلومات التوجيه بين بروتوكولات مختلفة", "إعادة ضبط الشبكة"],
+                answer: "تبادل معلومات التوجيه بين بروتوكولات مختلفة"
+            },
+            {
+                question: "ما هي وظيفة الـ **Data Plane** في شبكات SDN؟",
+                options: ["اتخاذ قرارات التوجيه", "إرسال الحزم بناءً على تعليمات الـ **Control Plane**", "إدارة المستخدمين", "توفير واجهة برمجة تطبيقات"],
+                answer: "إرسال الحزم بناءً على تعليمات الـ **Control Plane**"
+            },
+            {
+                question: "ما هو البروتوكول الذي يستخدمه OSPF لإنشاء علاقة الجوار بين الراوترات؟",
+                options: ["Hello", "Ping", "Traceroute", "ICMP"],
+                answer: "Hello"
+            },
+            {
+                question: "ما هي الوظيفة الأساسية لبروتوكول **TCP**؟",
+                options: ["توجيه البيانات", "توفير اتصال موثوق ومرتب", "إرسال البيانات بسرعة بدون ضمان", "تخصيص عناوين IP"],
+                answer: "توفير اتصال موثوق ومرتب"
+            },
+            {
+                question: "ما هو الغرض من بروتوكول **BGP**؟",
+                options: ["توجيه البيانات داخل شبكة واحدة", "توجيه البيانات بين الأنظمة المستقلة (ASs)", "منع الحلقات الشبكية", "توزيع عناوين IP"],
+                answer: "توجيه البيانات بين الأنظمة المستقلة (ASs)"
+            },
+            {
+                question: "ما هو الغرض من استخدام **Route Filtering** في BGP؟",
+                options: ["تعديل مسار البيانات", "منع مسارات معينة من الظهور في جدول التوجيه", "تجميع المسارات", "إعادة توزيع المسارات"],
+                answer: "منع مسارات معينة من الظهور في جدول التوجيه"
+            }
+        ];
+
+        const quizForm = document.getElementById('quiz-form');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsDiv = document.getElementById('results');
+        const scoreSpan = document.getElementById('score');
+        const reviewDiv = document.getElementById('review');
+        const timerSpan = document.querySelector('#timer span');
+
+        let timerInterval;
+        const totalTime = 90 * 60; // 90 دقيقة بالثواني
+
+        function renderQuestions(questionsToRender) {
+            quizForm.innerHTML = '';
+            questionsToRender.forEach((q, index) => {
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                
+                let optionsHTML = '';
+                q.options.forEach(option => {
+                    const uniqueId = `q${index}-o${option.replace(/\s/g, '')}`;
+                    optionsHTML += `
+                        <label>
+                            <input type="radio" name="q${index}" value="${option}" data-correct="${option === q.answer}">
+                            ${option}
+                        </label>
+                    `;
+                });
+
+                questionBlock.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    <div class="options">${optionsHTML}</div>
+                `;
+                quizForm.appendChild(questionBlock);
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startTimer() {
+            let timeLeft = totalTime;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('انتهى الوقت!');
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+            reviewDiv.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+
+                let reviewHTML = `<h3>${index + 1}. ${q.question}</h3>`;
+
+                if (selectedOption) {
+                    const userAnswer = selectedOption.value;
+                    const isCorrect = userAnswer === q.answer;
+                    
+                    if (isCorrect) {
+                        score++;
+                        reviewHTML += `<p class="correct-answer">إجابتك صحيحة: ${userAnswer}</p>`;
+                    } else {
+                        reviewHTML += `<p class="wrong-answer">إجابتك خاطئة: ${userAnswer}</p>`;
+                        reviewHTML += `<p>الإجابة الصحيحة هي: ${q.answer}</p>`;
+                    }
+                } else {
+                    reviewHTML += `<p class="wrong-answer">لم تقم بالإجابة على هذا السؤال.</p>`;
+                    reviewHTML += `<p>الإجابة الصحيحة هي: ${q.answer}</p>`;
+                }
+                
+                questionBlock.innerHTML = reviewHTML;
+                reviewDiv.appendChild(questionBlock);
+            });
+
+            const totalQuestions = questions.length;
+            scoreSpan.textContent = `نتيجتك هي: ${score} من ${totalQuestions}`;
+            resultsDiv.classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            clearInterval(timerInterval);
+            quizForm.reset();
+            resultsDiv.classList.add('hidden');
+            timerSpan.textContent = '90:00';
+            startTimer();
+        }
+
+        shuffleBtn.addEventListener('click', () => {
+            const shuffledQuestions = shuffleArray([...questions]);
+            renderQuestions(shuffledQuestions);
+        });
+        resetBtn.addEventListener('click', resetQuiz);
+        submitBtn.addEventListener('click', submitQuiz);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions(questions);
+            startTimer();
+        });
+    </script>
+</body>
+</html>
