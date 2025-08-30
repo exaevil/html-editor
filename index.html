@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple HTML Editor</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#22c55e}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif;background:linear-gradient(180deg,#071023 0%, #071a2b 100%);color:#e6eef8}
+    .wrap{max-width:1400px;margin:24px auto;padding:16px;gap:12px;display:grid;grid-template-columns:480px 1fr}
+    header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center}
+    h1{font-size:18px;margin:0}
+    .card{background:rgba(255,255,255,0.03);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6);display:flex;flex-direction:column}
+    textarea{width:100%;height:50vh;resize:vertical;background:#021124;border:1px solid rgba(255,255,255,0.04);color:#dff7df;padding:12px;border-radius:8px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Noto Sans Mono', monospace;font-size:13px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button{background:var(--card);border:1px solid rgba(255,255,255,0.04);color:inherit;padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.primary{background:linear-gradient(90deg,var(--accent),#16a34a);color:#021124;border:none}
+    iframe{width:100%;height:70vh;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:white;resize:both;overflow:auto}
+    .small{font-size:12px;padding:6px 8px}
+    .note{font-size:12px;color:#9fb0c8;margin-top:8px}
+    @media (max-width:980px){.wrap{grid-template-columns:1fr;}
+      iframe{height:55vh}
+      textarea{height:35vh}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Simple HTML Editor — Write HTML and Preview or Download</h1>
+      <div style="text-align:right;font-size:13px;color:#9fb0c8">Interface Language: English</div>
+    </header>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Editor</strong>
+        <div class="controls">
+          <button id="previewBtn" class="small">Live Preview</button>
+          <button id="openNewTab" class="small">Open in New Tab</button>
+          <button id="downloadBtn" class="small">Download .html</button>
+          <button id="clearBtn" class="small">Clear</button>
+        </div>
+      </div>
+      <textarea id="editor"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test Page</title>
+  <style>body{font-family:Tahoma,Arial;background:#f8fafc;padding:24px;color:#0f1720}</style>
+</head>
+<body>
+  <h2>Hello — This is a test page</h2>
+  <p>Write your HTML here then click Live Preview or Open in New Tab.</p>
+</body>
+</html></textarea>
+      <div class="note">The text will be shown/downloaded as-is. Beware of malicious JavaScript if you open unknown files.</div>
+    </section>
+
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Preview</strong>
+        <div class="controls">
+          <button id="backToEditor" class="small">Back to Editor</button>
+        </div>
+      </div>
+      <iframe id="preview" sandbox="allow-same-origin allow-scripts"></iframe>
+      <div class="note">Click "Live Preview" to refresh the view. The "Back to Editor" button will return focus to the editor. You can also resize this preview window.</div>
+    </section>
+  </div>
+
+  <script>
+    const editor = document.getElementById('editor');
+    const previewBtn = document.getElementById('previewBtn');
+    const preview = document.getElementById('preview');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const openNewTab = document.getElementById('openNewTab');
+    const clearBtn = document.getElementById('clearBtn');
+    const backToEditor = document.getElementById('backToEditor');
+
+    function updatePreview(){
+      const html = editor.value;
+      const blob = new Blob([html], {type: 'text/html'});
+      const url = URL.createObjectURL(blob);
+      preview.src = url;
+      setTimeout(()=> URL.revokeObjectURL(url), 20000);
+    }
+
+    previewBtn.addEventListener('click', ()=>{
+      updatePreview();
+      preview.focus();
+    });
+
+    downloadBtn.addEventListener('click', ()=>{
+      const blob = new Blob([editor.value], {type: 'text/html'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'page.html';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(a.href), 15000);
+    });
+
+    openNewTab.addEventListener('click', ()=>{
+      const blob = new Blob([editor.value], {type: 'text/html'});
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(()=> URL.revokeObjectURL(url), 20000);
+    });
+
+    clearBtn.addEventListener('click', ()=>{
+      if(confirm('Are you sure you want to clear the content?')) editor.value = '';
+    });
+
+    backToEditor.addEventListener('click', ()=>{
+      editor.focus();
+      editor.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    let timer = null;
+    editor.addEventListener('input', ()=>{
+      clearTimeout(timer);
+      timer = setTimeout(()=>{
+        updatePreview();
+      }, 700);
+    });
+
+    window.addEventListener('load', ()=>{ updatePreview(); });
+  </script>
+</body>
+</html>
